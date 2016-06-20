@@ -10,5 +10,5 @@ public class Movie {
     String title;
     String synopsis;
     float rating;
-    Date releaseDate;
+    String releaseDate;
 }

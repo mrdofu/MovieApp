@@ -6,9 +6,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.text.format.Time;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,42 +28,51 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link MainFragment.OnFragmentInteractionListener} interface
+ * {@link MovieFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MainFragment#newInstance} factory method to
+ * Use the {@link MovieFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MainFragment extends Fragment {
+public class MovieFragment extends Fragment {
 
+    private static final String TAG = "MovieFragment";
     private MovieAdapter mMovieAdapter;
 
-    public MainFragment() {
+    public MovieFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MainFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MainFragment newInstance(String param1, String param2) {
-        MainFragment fragment = new MainFragment();
-        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.moviefragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_sort_by_hot) {
+            updateMovies(getString(R.string.action_sort_hot));
+            return true;
+        } else if (id == R.id.action_sort_by_rating) {
+            updateMovies(getString(R.string.action_sort_rating));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -76,7 +87,7 @@ public class MainFragment extends Fragment {
                 dummyList);
 
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movie, container, false);
 
         // attach the adapter to the gridview
         GridView gridView = (GridView) rootView.findViewById(R.id.gridview_movies);
@@ -90,48 +101,65 @@ public class MainFragment extends Fragment {
         return rootView;
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        updateMovies();
+    /**
+     * Updates the movie grid with the new sort method
+     *
+     * @param sortParam resource string indicating which tmdb api endpoint to request
+     */
+    private void updateMovies(String sortParam) {
+        if (sortParam.length() <= 0) {
+            Log.w(TAG, "updateMovies: sortParam string empty");
+        } else {
+            FetchMovieTask movieTask = new FetchMovieTask();
+            movieTask.execute(sortParam);
+        }
     }
 
-    public class FetchMovieTask extends AsyncTask<String, Void, String[]> {
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateMovies(getString(R.string.pref_sort_hot));
+    }
+
+    public class FetchMovieTask extends AsyncTask<String, Void, Movie[]> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         /**
-         * Take the String representing the complete forecast in JSON Format and
-         * pull out the data we need to construct the Strings needed for the wireframes.
-         *
-         * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-         * into an Object hierarchy for us.
+         * Get all the movie data for one page of tMDB data. Each page has max 20 movies
          */
-        private Movie[] getWeatherDataFromJson(String moviesJsonString, int numDays)
+        private Movie[] getMovieDataFromJson(String moviesJsonString)
                 throws JSONException {
 
             // These are the names of the JSON objects that need to be extracted.
-            final String OWM_LIST = "list";
-            final String OWM_WEATHER = "weather";
-            final String OWM_TEMPERATURE = "temp";
-            final String OWM_MAX = "max";
-            final String OWM_MIN = "min";
-            final String OWM_DESCRIPTION = "main";
+            final String TMDB_RESULTS = "results";
+            final String TMDB_TITLE = "title";
+            final String TMDB_POSTER_URL = "poster_path";
+            final String TMDB_PLOT = "overview";
+            final String TMDB_RATING = "vote_average";
+            final String TMDB_RELEASE_DATE = "release_date";
 
             JSONObject moviesJson = new JSONObject(moviesJsonString);
-            JSONArray moviesArray = moviesJson.getJSONArray(OWM_LIST);
+            JSONArray moviesArray = moviesJson.getJSONArray(TMDB_RESULTS);
+            int numMovies = moviesArray.length();
 
+            Movie[] resultMovies = new Movie[numMovies];
 
-            for(int i = 0; i < moviesArray.length(); i++) {
-                // Get the JSON object representing the day
-                JSONObject dayForecast = moviesArray.getJSONObject(i);
-
+            for (int i = 0; i < numMovies; i++) {
+                // Get the JSON object representing the movie
+                JSONObject movieData = moviesArray.getJSONObject(i);
+                resultMovies[i].title = movieData.getString(TMDB_TITLE);
+                resultMovies[i].posterUrl = movieData.getString(TMDB_POSTER_URL);
+                resultMovies[i].synopsis = movieData.getString(TMDB_PLOT);
+                resultMovies[i].rating = movieData.getInt(TMDB_RATING);
+                resultMovies[i].releaseDate = movieData.getString(TMDB_RELEASE_DATE);
             }
-            return resultStrs;
+            return resultMovies;
 
         }
+
         @Override
-        protected String[] doInBackground(String... params) {
+        protected Movie[] doInBackground(String... params) {
 
             // If there's no zip code, there's nothing to look up.  Verify size of params.
             if (params.length == 0) {
@@ -144,30 +172,17 @@ public class MainFragment extends Fragment {
             BufferedReader reader = null;
 
             // Will contain the raw JSON response as a string.
-            String forecastJsonStr = null;
-
-            String format = "json";
-            String units = "metric";
-            int numDays = 7;
+            String moviesJsonStr = null;
 
             try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are avaiable at OWM's forecast API page, at
-                // http://openweathermap.org/API#forecast
-                final String FORECAST_BASE_URL =
-                        "http://api.openweathermap.org/data/2.5/forecast/daily?";
-                final String QUERY_PARAM = "q";
-                final String FORMAT_PARAM = "mode";
-                final String UNITS_PARAM = "units";
-                final String DAYS_PARAM = "cnt";
-                final String APPID_PARAM = "APPID";
+                // Construct the URL for the movie db api
+                final String MOVIES_BASE_URL =
+                        "http://http://api.themoviedb.org/3/movie/";
+                final String API_KEY_PARAM = "api_key";
 
-                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM, params[0])
-                        .appendQueryParameter(FORMAT_PARAM, format)
-                        .appendQueryParameter(UNITS_PARAM, units)
-                        .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
-                        .appendQueryParameter(APPID_PARAM, BuildConfig.OPEN_WEATHER_MAP_API_KEY)
+                Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
+                        .appendPath(params[0])
+                        .appendQueryParameter(API_KEY_PARAM, getString(R.string.tMDB_API_KEY))
                         .build();
 
                 URL url = new URL(builtUri.toString());
@@ -198,10 +213,10 @@ public class MainFragment extends Fragment {
                     // Stream was empty.  No point in parsing.
                     return null;
                 }
-                forecastJsonStr = buffer.toString();
+                moviesJsonStr = buffer.toString();
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
+                // If the code didn't successfully get the movie data, there's no point in attemping
                 // to parse it.
                 return null;
             } finally {
@@ -218,7 +233,7 @@ public class MainFragment extends Fragment {
             }
 
             try {
-                return getWeatherDataFromJson(forecastJsonStr, numDays);
+                return getMovieDataFromJson(moviesJsonStr);
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
@@ -229,11 +244,11 @@ public class MainFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(String[] result) {
-            if (result != null) {
-                mForecastAdapter.clear();
-                for(String dayForecastStr : result) {
-                    mForecastAdapter.add(dayForecastStr);
+        protected void onPostExecute(Movie[] movies) {
+            if (movies != null) {
+                mMovieAdapter.clear();
+                for (Movie movie : movies) {
+                    mMovieAdapter.add(movie);
                 }
                 // New data is back from the server.  Hooray!
             }
