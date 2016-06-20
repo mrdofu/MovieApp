@@ -32,9 +32,19 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
             imageView = (ImageView) convertView;
         }
 
-        String url = ;
+        // building the url to retrieve the movie thumbnail
+        String[] sizeOptions = { "w92", "w154", "w185", "w342", "w500", "w780", "original"};
+
+        final String baseUrl = "http://image.tmdb.org/t/p/";
+        String imgSize = sizeOptions[2];
+        String posterPath = super.getItem(position).posterPath;
+        String url = baseUrl + imgSize + posterPath;
+
+        // picasso loads the image into the imageView
         Picasso.with(mContext)
                 .load(url)
                 .into(imageView);
+
+        return imageView;
     }
 }

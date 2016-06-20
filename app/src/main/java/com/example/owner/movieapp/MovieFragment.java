@@ -1,10 +1,8 @@
 package com.example.owner.movieapp;
 
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -28,7 +26,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 
 
 /**
@@ -134,7 +131,7 @@ public class MovieFragment extends Fragment {
             // These are the names of the JSON objects that need to be extracted.
             final String TMDB_RESULTS = "results";
             final String TMDB_TITLE = "title";
-            final String TMDB_POSTER_URL = "poster_path";
+            final String TMDB_POSTER_PATH = "poster_path";
             final String TMDB_PLOT = "overview";
             final String TMDB_RATING = "vote_average";
             final String TMDB_RELEASE_DATE = "release_date";
@@ -149,13 +146,12 @@ public class MovieFragment extends Fragment {
                 // Get the JSON object representing the movie
                 JSONObject movieData = moviesArray.getJSONObject(i);
                 resultMovies[i].title = movieData.getString(TMDB_TITLE);
-                resultMovies[i].posterUrl = movieData.getString(TMDB_POSTER_URL);
+                resultMovies[i].posterPath = movieData.getString(TMDB_POSTER_PATH);
                 resultMovies[i].synopsis = movieData.getString(TMDB_PLOT);
                 resultMovies[i].rating = movieData.getInt(TMDB_RATING);
                 resultMovies[i].releaseDate = movieData.getString(TMDB_RELEASE_DATE);
             }
             return resultMovies;
-
         }
 
         @Override
