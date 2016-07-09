@@ -141,11 +141,11 @@ public class MovieFragment extends Fragment {
             for (int i = 0; i < numMovies; i++) {
                 // Get the JSON object representing the movie
                 JSONObject movieData = moviesArray.getJSONObject(i);
-                resultMovies[i].title = movieData.getString(TMDB_TITLE);
-                resultMovies[i].posterPath = movieData.getString(TMDB_POSTER_PATH);
-                resultMovies[i].synopsis = movieData.getString(TMDB_PLOT);
-                resultMovies[i].rating = movieData.getInt(TMDB_RATING);
-                resultMovies[i].releaseDate = movieData.getString(TMDB_RELEASE_DATE);
+                resultMovies[i] = new Movie(movieData.getString(TMDB_TITLE),
+                        movieData.getString(TMDB_POSTER_PATH),
+                        movieData.getString(TMDB_PLOT),
+                        movieData.getDouble(TMDB_RATING),
+                        movieData.getString(TMDB_RELEASE_DATE));
             }
             return resultMovies;
         }

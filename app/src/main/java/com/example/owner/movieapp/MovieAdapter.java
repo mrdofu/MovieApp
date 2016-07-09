@@ -37,7 +37,7 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
 
         final String baseUrl = "http://image.tmdb.org/t/p/";
         String imgSize = sizeOptions[2];
-        String posterPath = super.getItem(position).posterPath;
+        String posterPath = super.getItem(position).getPosterPath();
         String url = baseUrl + imgSize + posterPath;
 
         // picasso loads the image into the imageView
