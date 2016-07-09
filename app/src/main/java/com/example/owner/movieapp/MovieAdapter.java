@@ -17,8 +17,8 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
 
     private Context mContext;
 
-    public MovieAdapter(Context context, int resource, int textViewResourceId, List<Movie> movies) {
-        super(context, resource, textViewResourceId, movies);
+    public MovieAdapter(Context context, int resource, int imgViewResourceId, List<Movie> movies) {
+        super(context, resource, imgViewResourceId, movies);
         mContext = context;
     }
 

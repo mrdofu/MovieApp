@@ -30,11 +30,7 @@ import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link MovieFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link MovieFragment#newInstance} factory method to
- * create an instance of this fragment.
  */
 public class MovieFragment extends Fragment {
 
@@ -156,8 +152,7 @@ public class MovieFragment extends Fragment {
 
         @Override
         protected Movie[] doInBackground(String... params) {
-
-            // If there's no zip code, there's nothing to look up.  Verify size of params.
+            // Verify size of params.
             if (params.length == 0) {
                 return null;
             }
@@ -171,9 +166,10 @@ public class MovieFragment extends Fragment {
             String moviesJsonStr = null;
 
             try {
+
                 // Construct the URL for the movie db api
                 final String MOVIES_BASE_URL =
-                        "http://http://api.themoviedb.org/3/movie/";
+                        "http://api.themoviedb.org/3/movie/";
                 final String API_KEY_PARAM = "api_key";
 
                 Uri builtUri = Uri.parse(MOVIES_BASE_URL).buildUpon()
@@ -182,8 +178,9 @@ public class MovieFragment extends Fragment {
                         .build();
 
                 URL url = new URL(builtUri.toString());
+                Log.d(LOG_TAG, "doInBackground: url"+url.getPath());
 
-                // Create the request to OpenWeatherMap, and open the connection
+                // Create the request to moviedb, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
