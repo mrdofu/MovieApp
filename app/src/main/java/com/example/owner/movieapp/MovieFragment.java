@@ -178,7 +178,6 @@ public class MovieFragment extends Fragment {
                         .build();
 
                 URL url = new URL(builtUri.toString());
-                Log.d(LOG_TAG, "doInBackground: url"+url.getPath());
 
                 // Create the request to moviedb, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
