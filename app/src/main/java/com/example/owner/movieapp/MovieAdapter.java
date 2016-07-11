@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
@@ -22,18 +23,20 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
         mContext = context;
     }
 
-    public View getView(int position, View convertView, ViewGroup parent){
+    public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
 
-        if (convertView==null){
+        if (convertView == null) {
             // if it's not recycled, initialize
             imageView = new ImageView(mContext);
+            float posterSize = getContext().getResources().getDimension(R.dimen.poster_size);
+            imageView.setLayoutParams(new GridView.LayoutParams((int) posterSize, (int) posterSize * 3 / 2));
         } else {
             imageView = (ImageView) convertView;
         }
 
         // building the url to retrieve the movie thumbnail
-        String[] sizeOptions = { "w92", "w154", "w185", "w342", "w500", "w780", "original"};
+        String[] sizeOptions = {"w92", "w154", "w185", "w342", "w500", "w780", "original"};
 
         final String baseUrl = "http://image.tmdb.org/t/p/";
         String imgSize = sizeOptions[2];
