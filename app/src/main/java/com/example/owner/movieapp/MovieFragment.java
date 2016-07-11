@@ -59,10 +59,10 @@ public class MovieFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_sort_by_hot) {
-            updateMovies(getString(R.string.action_sort_hot));
+            updateMovies(getString(R.string.pref_sort_hot));
             return true;
         } else if (id == R.id.action_sort_by_rating) {
-            updateMovies(getString(R.string.action_sort_rating));
+            updateMovies(getString(R.string.pref_sort_rating));
             return true;
         }
         return super.onOptionsItemSelected(item);
