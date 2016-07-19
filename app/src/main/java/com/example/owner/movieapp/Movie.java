@@ -1,9 +1,12 @@
 package com.example.owner.movieapp;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by Owner on 2016-04-21.
  */
-public class Movie {
+public class Movie implements Parcelable {
     private String posterPath;
     private String title;
     private String synopsis;
@@ -34,7 +37,29 @@ public class Movie {
         this.title = title;
         this.posterPath = posterPath;
         this.synopsis = synopsis;
-        this.rating = (float)rating;
+        this.rating = (float) rating;
         this.releaseDate = releaseDate;
+    }
+
+    private Movie(Parcel in) {
+
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Movie createFromParcel(Parcel in) {
+            return new Movie(in);
+        }
+
+        public Movie[] newArray(int size){
+            return new Movie[size];
+        }
+    };
+
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel out, int flags) {
     }
 }
