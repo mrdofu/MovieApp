@@ -29,8 +29,8 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
         if (convertView == null) {
             // if it's not recycled, initialize
             imageView = new ImageView(mContext);
-            float posterSize = getContext().getResources().getDimension(R.dimen.poster_size);
-            imageView.setLayoutParams(new GridView.LayoutParams((int) posterSize, (int) posterSize * 3 / 2));
+            float posterWidth = getContext().getResources().getDimension(R.dimen.poster_width);
+            imageView.setLayoutParams(new GridView.LayoutParams((int) posterWidth, (int) posterWidth * 3 / 2));
         } else {
             imageView = (ImageView) convertView;
         }

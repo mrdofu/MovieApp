@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 public class DetailFragment extends Fragment {
 
@@ -17,6 +18,7 @@ public class DetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
+        // TODO: do shit i'll need to here
         }
     }
 
@@ -27,4 +29,7 @@ public class DetailFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_detail, container, false);
     }
 
+    public void updateDetail(Movie movie){
+        ImageView posterView = (ImageView) getActivity().findViewById(R.id.detail_poster);
+    }
 }

@@ -89,10 +89,21 @@ public class MovieFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // TODO: launch detail fragment from here
-                Movie movie = mMovieAdapter.getItem(position);
-                Intent intent = new Intent(getActivity(),DetailFragment.class)
-                        .putExtra("Movie", movie);
+                DetailFragment detailFragment = (DetailFragment) getFragmentManager()
+                                                .findFragmentById(R.id.detail_frag);
+
+                if (detailFragment == null) {
+                    // detail fragment isn't shown (handheld), so launch new activity to show it
+                    Movie movie = mMovieAdapter.getItem(position);
+                    Intent intent = new Intent(getActivity(),DetailFragment.class)
+                            .putExtra("Movie", movie);
+                    startActivity(intent);
+                } else {
+                    // detail fragment is in the layout (horizontal tablet), so update it
+                    // TODO: update detail fragment
+                }
+
+
             }
         });
         return rootView;
