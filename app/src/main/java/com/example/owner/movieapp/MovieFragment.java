@@ -1,6 +1,8 @@
 package com.example.owner.movieapp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -55,15 +57,24 @@ public class MovieFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.action_sort_by_hot) {
-            updateMovies(getString(R.string.pref_sort_hot));
+            // write to sharedpreferences with sort by hot, then call updateMovies
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_hot));
+            editor.commit();
+
+            updateMovies();
             return true;
         } else if (id == R.id.action_sort_by_rating) {
-            updateMovies(getString(R.string.pref_sort_rating));
+            // write to sharedperefernces with sort by top, then call updateMovies
+            SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.pref_sort_key), getString(R.string.pref_sort_rating));
+            editor.commit();
+
+            updateMovies();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -111,23 +122,23 @@ public class MovieFragment extends Fragment {
     }
 
     /**
-     * Updates the movie grid with the new sort method
-     *
-     * @param sortParam resource string indicating which tmdb api endpoint to request
+     * Updates the movie grid with the new sort parameter
+     * checks sharedPreferences for string indicating which tmdb api endpoint to request
      */
-    private void updateMovies(String sortParam) {
-        if (sortParam.length() <= 0) {
-            Log.w(TAG, "updateMovies: sortParam string empty");
-        } else {
-            FetchMovieTask movieTask = new FetchMovieTask();
-            movieTask.execute(sortParam);
-        }
+    private void updateMovies() {
+        String sortParam = getActivity().getPreferences(Context.MODE_PRIVATE)
+                .getString(getString(R.string.pref_sort_key),
+                getString(R.string.pref_sort_hot));
+
+        FetchMovieTask movieTask = new FetchMovieTask();
+        movieTask.execute(sortParam);
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        updateMovies(getString(R.string.pref_sort_hot));
+
+        updateMovies();
     }
 
     public class FetchMovieTask extends AsyncTask<String, Void, Movie[]> {
