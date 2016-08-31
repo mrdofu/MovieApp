@@ -3,9 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/container"
     tools:context="com.example.owner.movieapp.DetailActivity">
-    <fragment class="com.example.owner.movieapp.DetailFragment"
-        android:id="@+id/detail_frag"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+
 </FrameLayout>
