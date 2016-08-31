@@ -3,6 +3,7 @@ package com.example.owner.movieapp;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 public class DetailFragment extends Fragment {
+    private final String TAG = "DetailFragment";
+    static final String MOVIE_KEY = "Movie";
 
 
     public DetailFragment() {
@@ -19,8 +22,6 @@ public class DetailFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-        }
     }
 
     @Override
@@ -28,6 +29,16 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_detail, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState){
+        super.onActivityCreated(savedInstanceState);
+        Bundle arguments = getArguments();
+        if (arguments != null){
+            Movie movie = arguments.getParcelable(MOVIE_KEY);
+            updateDetail(movie);
+        }
     }
 
     // update for horizontal tablet

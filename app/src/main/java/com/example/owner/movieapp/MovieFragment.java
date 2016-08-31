@@ -97,7 +97,7 @@ public class MovieFragment extends Fragment {
                 if (detailFragment == null) {
                     // detail fragment isn't shown (handheld), so launch new activity to show it
                     Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra("Movie", movie);
+                            .putExtra(DetailFragment.MOVIE_KEY, movie);
                     startActivity(intent);
                 } else {
                     // detail fragment is in the layout (horizontal tablet), so update it
