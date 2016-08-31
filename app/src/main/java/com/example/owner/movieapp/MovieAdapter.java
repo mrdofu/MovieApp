@@ -26,6 +26,7 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
 
+        // recycling imageview logic
         if (convertView == null) {
             // if it's not recycled, initialize
             imageView = new ImageView(mContext);
@@ -35,13 +36,9 @@ public class MovieAdapter extends ArrayAdapter<Movie> {
             imageView = (ImageView) convertView;
         }
 
-        // building the url to retrieve the movie thumbnail
-        String[] sizeOptions = {"w92", "w154", "w185", "w342", "w500", "w780", "original"};
-
-        final String baseUrl = "http://image.tmdb.org/t/p/";
-        String imgSize = sizeOptions[2];
-        String posterPath = super.getItem(position).getPosterPath();
-        String url = baseUrl + imgSize + posterPath;
+        // building the url for picasso
+        String url = PicassoHelper.buildUrl(PicassoHelper.POSTER_SIZE_M,
+                super.getItem(position).getPosterPath());
 
         // picasso loads the image into the imageView
         Picasso.with(mContext)

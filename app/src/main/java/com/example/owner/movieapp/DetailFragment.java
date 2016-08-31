@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 public class DetailFragment extends Fragment {
     private final String TAG = "DetailFragment";
     static final String MOVIE_KEY = "Movie";
@@ -51,7 +53,11 @@ public class DetailFragment extends Fragment {
         TextView releaseTv = (TextView) fragmentActivity.findViewById(R.id.detail_release);
         TextView synopsisTv = (TextView) fragmentActivity.findViewById(R.id.detail_synopsis);
 
-        // TODO: update poster imageview
+        String url = PicassoHelper.buildUrl(PicassoHelper.POSTER_SIZE_M,
+                movie.getPosterPath());
+        Picasso.with(posterIv.getContext())
+                .load(url)
+                .into(posterIv);
         titleTv.setText(movie.getTitle());
         ratingTv.setText(movie.getRating() + "/10");
         releaseTv.setText(movie.getReleaseDate());
