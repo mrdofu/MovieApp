@@ -1,5 +1,6 @@
 package com.example.owner.movieapp;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -39,9 +40,26 @@ public class MovieFragment extends Fragment {
 
     private static final String TAG = "MovieFragment";
     private MovieAdapter mMovieAdapter;
+    private MovieListClickListener mCallback;
 
     public MovieFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        if (context instanceof Activity){
+            // This makes sure that the container activity has implemented
+            // the callback interface. If not, it throws an exception
+            try {
+                mCallback = (MovieListClickListener) context;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(context.toString()
+                        + " must implement MovieListClickListener");
+            }
+        }
     }
 
     @Override
@@ -100,22 +118,7 @@ public class MovieFragment extends Fragment {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                DetailFragment detailFragment = (DetailFragment) getFragmentManager()
-                        .findFragmentById(R.id.detail_frag);
-
-                Movie movie = mMovieAdapter.getItem(position);
-
-                if (detailFragment == null) {
-                    // detail fragment isn't shown (handheld), so launch new activity to show it
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
-                            .putExtra(DetailFragment.MOVIE_KEY, movie);
-                    startActivity(intent);
-                } else {
-                    // detail fragment is in the layout (horizontal tablet), so update it
-                    detailFragment.updateDetail(movie);
-                }
-
-
+                mCallback.onItemSelected(mMovieAdapter.getItem(position));
             }
         });
         return rootView;
@@ -141,12 +144,19 @@ public class MovieFragment extends Fragment {
         updateMovies();
     }
 
+    /**
+     * Callback for parent activity to act when an item in the gridview is selected
+     */
+    public interface MovieListClickListener {
+        public void onItemSelected(Movie movie);
+    }
+
     public class FetchMovieTask extends AsyncTask<String, Void, Movie[]> {
 
         private final String LOG_TAG = FetchMovieTask.class.getSimpleName();
 
         /**
-         * Get all the movie data for one page of tMDB data. Each page has max 20 movies
+         * Converts JSON from tMDB into movie objects
          */
         private Movie[] getMovieDataFromJson(String moviesJsonString)
                 throws JSONException {

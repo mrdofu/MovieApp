@@ -1,18 +1,22 @@
 package com.example.owner.movieapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements MovieFragment.MovieListClickListener{
+
+    private DetailFragment mDetailFrag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO: if it's a horizontal tablet, use multi-fragment layout. If not, single-fragment
         setContentView(R.layout.activity_main);
 
+        mDetailFrag = (DetailFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.detail_frag);
     }
 
     @Override
@@ -35,5 +39,18 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onItemSelected(Movie movie){
+        if (mDetailFrag == null) {
+            // detail fragment isn't shown (handheld), so launch new activity to show it
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .putExtra(DetailFragment.MOVIE_KEY, movie);
+            startActivity(intent);
+        } else {
+            // detail fragment is in the layout (horizontal tablet), so update it
+            mDetailFrag.updateDetail(movie);
+        }
     }
 }
